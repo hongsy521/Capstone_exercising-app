@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>month page</title>
-    <!-- <link rel="stylesheet" href="./index.css"> -->
+    <!-- 수정 완료 !! -->
     <link rel="stylesheet" href="top_bottom.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <style>
@@ -119,8 +119,8 @@
             <form>
                 <p class="info">닉네임</p>
                 <input class="input_text" type="text" id="nickName" placeholder="예. 홍길동 "></input>
-                <p class="info">당신의 MBTI는 무엇입니까?</p>
-                <select id="mbti">
+                <p class="info">MBTI *</p>
+                <select id="mbti" required>
                     <option>MBTI</option>
                     <option>INTP</option>
                     <option>INTJ</option>
@@ -143,8 +143,6 @@
                 <input class="input_text" type="text" id="weight" placeholder="kg"></input>
                 <p class="info">키</p>
                 <input class="input_text" type="text" id="height" placeholder="cm"></input>
-                <p class="info">생년월일</p>
-                <input class="input_text" type="text" id="birth" placeholder="YYYYMMDD">
                 <input type="submit" id="button" value="프로필 수정 완료"></input>
             </form>
         </div>
@@ -161,12 +159,38 @@
         </nav>
     </div>
     <script>
-        const user = firebase.auth().currentUser;
-        if(user !== null) {
-            const email = user.email;
-        } //이거 안 됨
-        db.collection("users").doc(email)
-        .update()
+        const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
+
+        const profile = db.collection("users").doc(id);
+
+        document.getElementById('button').addEventListener('click', (event) => {
+            event.preventDefault()
+            if($('#nickName').val()){
+                profile.update({
+                    nickname : $('#nickName').val()
+                })
+                console.log("닉네임 수정 완료");
+            }
+            if($('#mbti').val()){
+                profile.update({
+                    mbti : $('#mbti').val()
+                })
+                console.log("mbti 수정 완료");
+            }
+            if($('#weight').val()){
+                profile.update({
+                    weight : $('#weight').val()
+                })
+                console.log("몸무게 수정 완료");
+            }
+            if($('#height').val()){
+                profile.update({
+                    height : $('#height').val()
+                })
+                console.log("키 수정 완료");
+            }
+        });
+
     </script>
 </body>
 </html>

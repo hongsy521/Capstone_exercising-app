@@ -53,6 +53,24 @@
             color: #7a7878;
             text-decoration: none;
         }
+
+        .wirte_list{
+            margin-top: 80px;
+            margin-left: 5%;
+            margin-right: 10%;
+        }
+        .product{
+            display: flex;
+            width:100%;
+            height:150px;
+            padding : 15px;
+            background-color:white;
+            border: 1px solid #DBDBDB;
+            border-radius: 10px;
+            margin-top:20px;
+            margin-bottom:10px
+        }
+
     </style>
 </head>
 <body>
@@ -65,14 +83,19 @@
             </ul>
         </nav>
     </div>
-    <div>
-        <h3 id="title"></h3>
-        <div id="content"></div>
+
+    <div class="wirte_list">
+        <!--<div class="product">
+            <span id="title"></span>
+            <span id="date"></span>
+            <p id="content"></p>
+        </div>-->
     </div>
+
     <div class="right_bar">
         <a href="write.html">글쓰기</a>
     </div>
-    
+
     <div class="bottom-bar">
         <nav>
             <ul>
@@ -87,14 +110,30 @@
         const db = firebase.firestore();
         const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
 
-        const write = db.collection("write").doc();
+        const write = db.collection("write").doc(id);
 
-        write.get().then((doc)=>{
-        if(doc.exists){
-            document.getElementById("title").innerHTML = doc.data().title;
-            document.getElementById("content").innerHTML = doc.data().content;
-        }
+        
+        db.collection("write").get().then((e) => {
+            e.forEach((doc) => {
+                // doc.data() is never und/efined for query doc snapshots
+                var tem = `<div class="product">
+                        <p id="title">${doc.data().title}</p>
+                        <p id="date">${doc.data().date}</p>
+                        <div><p id="content">${doc.data().content}</p></div>
+                    </div>`;
+                $('.wirte_list').append(tem);
+            });
         })
+
+        const user = db.collection("users").doc(id);
+
+        db.collection("write").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.data().title+doc.data().content);
+            });
+        });
+        
 
 
     </script>
