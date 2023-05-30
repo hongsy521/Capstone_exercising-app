@@ -101,8 +101,6 @@
                 <textarea name="content" id="ucontent" placeholder="내용" required></textarea>
                 <input class="ufile" type="file" name="SelectFile" />
             </div>
-
-
             <div class="button">
                 <button id="button" type="submit">글 작성</button>
             </div>
@@ -124,12 +122,31 @@
         const db = firebase.firestore();
         const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
 
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+
+        const dateStr = year + '-' + month + '-' + day;
+
+        const hours = today.getHours();
+        const minutes = today.getMinutes();
+        const seconds = today.getSeconds();
+
+        const timeStr = hours + ':' + minutes + ':' + seconds;
+        console.log(timeStr);
+
+
         document.getElementById('button').addEventListener('click', (event) => {
             event.preventDefault()
-            db.collection('write').doc(id).set({
+            var data = {
+                id : id,
+                date : timeStr,
                 title : $('#utitle').val(),
                 content : $('#ucontent').val()
-            })
+            }
+            
+            db.collection('write').add(data)
             .then((result)=>{
                 alert("글 작성이 완료되었습니다.");
                 window.location.href = 'comu.html'
