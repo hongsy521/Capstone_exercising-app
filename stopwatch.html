@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stopwatch</title>
+  <style>
+    #stopwatchImg {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <img src="start.png" id="stopwatchImg" onclick="toggleStopwatch()">
+  <p id="totalTimeDisplay"></p>
+  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-firestore.js"></script>
+  <script>
+    // Firebase 초기화
+    const firebaseConfig = {
+        apiKey: "AIzaSyD0kjn0AyijWlVw9EAOefPcYm9LgQuHM8o",
+        authDomain: "firestore-13ae7.firebaseapp.com",
+        projectId: "firestore-13ae7",
+        storageBucket: "firestore-13ae7.appspot.com",
+        messagingSenderId: "585869962348",
+        appId: "1:585869962348:web:1776a785825068ac587c49",
+        measurementId: "G-PLC3CKWYVT"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 스톱워치 변수
+    let stopwatchInterval;
+    let startTime;
+    let elapsedTime = 0;
+    let accumulatedTime = 0;
+
+    // 이미지 클릭 이벤트 핸들러
+    function toggleStopwatch() {
+      const stopwatchImg = document.getElementById('stopwatchImg');
+
+      if (stopwatchInterval) {
+        // 스톱워치 중지
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        elapsedTime += Date.now() - startTime;
+        const elapsedTimeInSeconds = elapsedTime / 1000;
+
+        // 시간 Firebase Firestore에 저장
+        db.collection("times").add({
+          time: elapsedTimeInSeconds
+        })
+        .then(function(docRef) {
+          console.log("시간이 성공적으로 저장되었습니다.");
+          accumulatedTime += elapsedTimeInSeconds;
+          getTotalTime();
+        })
+        .catch(function(error) {
+          console.error("시간 저장 중 오류 발생:", error);
+        });
+
+        stopwatchImg.src = "start.png";
+      } else {
+        // 스톱워치 시작
+        startTime = Date.now();
+        stopwatchInterval = setInterval(function() {
+          const elapsedTimeInSeconds = (elapsedTime + Date.now() - startTime) / 1000;
+          // 시간을 표시하는 DOM 요소에 업데이트된 시간을 표시합니다.
+          // 예: document.getElementById("timeDisplay").textContent = elapsedTimeInSeconds;
+        }, 10);
+
+        stopwatchImg.src = "stop.png";
+      }
+    }
+
+    // 파이어스토어에서 총 시간을 가져와 화면에 출력
+    function getTotalTime() {
+      const timesRef = db.collection("times");
+      
+      timesRef
+        .get()
+        .then(function(querySnapshot) {
+          let totalTime = accumulatedTime;
+          querySnapshot.forEach(function(doc) {
+            totalTime += doc.data().time;
+          });
+          
+          const hours = Math.floor(totalTime / 3600);
+          const minutes = Math.floor((totalTime % 3600) / 60);
+          const seconds = Math.floor(totalTime % 60);
+
+          const totalTimeDisplay = document.getElementById("totalTimeDisplay");
+          totalTimeDisplay.textContent = `누적 총 시간: ${hours}시간 ${minutes}분 ${seconds}초`;
+        })
+        .catch(function(error) {
+          console.error("시간 조회 중 오류 발생:", error);
+        });
+    }
+  </script>
+</body>
+</html>
