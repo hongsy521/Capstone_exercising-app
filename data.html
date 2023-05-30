@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Firebase 데이터 저장</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>Firebase 데이터 저장</h1>
+
+  <label for="height">키(cm):</label>
+  <input type="text" id="height"><br>
+
+  <label for="weight">몸무게(kg):</label>
+  <input type="text" id="weight"><br>
+
+  <label for="gender">성별:</label>
+  <select id="gender">
+    <option value="male">남성</option>
+    <option value="female">여성</option>
+  </select><br>
+
+  <button onclick="saveData()">저장</button>
+
+  <script>
+    // Firebase 프로젝트 설정
+    var firebaseConfig = {
+      apiKey: "AIzaSyD0kjn0AyijWlVw9EAOefPcYm9LgQuHM8o",
+      authDomain: "firestore-13ae7.firebaseapp.com",
+      projectId: "firestore-13ae7",
+      storageBucket: "firestore-13ae7.appspot.com",
+      messagingSenderId: "585869962348",
+      appId: "1:585869962348:web:1776a785825068ac587c49",
+      measurementId: "G-PLC3CKWYVT"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+
+    // Firestore 데이터베이스 참조
+    var db = firebase.firestore();
+
+    // 데이터 저장 함수
+    function saveData() {
+      var heightInput = document.getElementById("height");
+      var weightInput = document.getElementById("weight");
+      var genderSelect = document.getElementById("gender");
+
+      var height = parseFloat(heightInput.value);
+      var weight = parseFloat(weightInput.value);
+      var gender = genderSelect.value;
+
+      var bmi = calculateBMI(height, weight);
+      var status = evaluateBMIStatus(bmi);
+      var characterImage = getCharacterImage(status, gender);
+
+      var data = {
+        height: height,
+        weight: weight,
+        bmi: bmi,
+        status: status,
+        gender: gender,
+        characterImage: characterImage
+      };
+
+      // Firestore에 데이터 추가
+      db.collection("userData").add(data)
+        .then(function(docRef) {
+          console.log("데이터 저장 완료");
+          // 데이터 저장 후 필요한 작업 수행
+        })
+        .catch(function(error) {
+          console.error("데이터 저장 실패: ", error);
+        });
+    }
+
+    // BMI 계산 함수
+    function calculateBMI(height, weight) {
+      var heightMeters = height / 100; // 키를 미터로 변환
+      var bmi = weight / (heightMeters * heightMeters);
+      return bmi.toFixed(2); // 소수점 2자리까지 반올림하여 반환
+    }
+
+    // BMI 상태 평가 함수
+    function evaluateBMIStatus(bmi) {
+      if (bmi >= 18.5 && bmi <= 23) {
+        return "정상";
+      } else if (bmi < 18.5) {
+        return "저체중";
+      } else {
+        return "과체중";
+      }
+    }
+
+    // 캐릭터 이미지 URL 반환 함수
+    function getCharacterImage(status, gender) {
+      if (status === "정상") {
+        if (gender === "male") {
+          return "image/normal_male.png";
+        } else if (gender === "female") {
+          return "image/normal_female.png";
+        }
+      } else if (status === "저체중") {
+        if (gender === "male") {
+          return "image/underweight_male.png";
+        } else if (gender === "female") {
+          return "image/underweight_female.png";
+        }
+      } else if (status === "과체중") {
+        if (gender === "male") {
+          return "image/overweight_male.png";
+        } else if (gender === "female") {
+          return "image/overweight_female.png";
+        }
+      }
+
+      // 기본 이미지 URL (상태와 성별에 해당하는 이미지가 없는 경우)
+      return "image/default.png";
+    }
+  </script>
+</body>
+</html>
