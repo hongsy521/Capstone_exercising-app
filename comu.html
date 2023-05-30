@@ -7,12 +7,51 @@
     <title>community</title>
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="top_bottom.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+  
+    <script>
+        const firebaseConfig = {
+              apiKey: "AIzaSyDoo8VPeD5-bb1day25uip3UYDm5nXkcVE",
+              authDomain: "capstone-aefbf.firebaseapp.com",
+              databaseURL: "https://capstone-aefbf-default-rtdb.firebaseio.com",
+              projectId: "capstone-aefbf",
+              storageBucket: "capstone-aefbf.appspot.com",
+              messagingSenderId: "627442023379",
+              appId: "1:627442023379:web:ccd134b08e2aadaea20d26",
+              measurementId: "G-86QYK1RENM"
+          };
+  
+          // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+    </script>
     <style>
-        .top-bar li:first-child > a {
+        .top-bar li:nth-child(2) > a {
             color:tomato;
         }
         .bottom-bar li:nth-child(4) > a  {
             color: tomato;
+        }
+        .right_bar{
+            background-color: white;
+            border: 5px solid salmon;
+            position: fixed;
+            top: 80%;
+            right:5%;
+            width: 50px;
+            height: 50px;
+            border-radius: 50% 50%;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        a{
+            font-weight: 700;
+            color: #7a7878;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -20,74 +59,20 @@
     <div class="top-bar">
         <nav>
             <ul>
+                 <li><a href="etc.html">더보기</a></li>
                 <li><a href="comu.html">커뮤니티</a></li>
                 <li><a href="ranking.html">운동자 랭킹</a></li>
             </ul>
         </nav>
-    </div><p></p>
-    <div id="rankingwrap">
-        <div id="ranking">
-            <div class="rankinginfo" value="ranking_number">1</div>
-            <div class="rankinginfo" value="abataimg_small">이미지<img src=""></div>
-            <div class="rankinginfo" value="abatatext_small">아바타 소개</div>
-            <div class="rankinginfo" value="timer">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        <div id="ranking">
-            <div class="rankinginfo">1</div>
-            <div class="rankinginfo">이미지<img src=""></div>
-            <div class="rankinginfo">아바타 소개</div>
-            <div class="rankinginfo">타이머</div>
-        </div><br>
-        
     </div>
+    <div>
+        <h3 id="title"></h3>
+        <div id="content"></div>
+    </div>
+    <div class="right_bar">
+        <a href="write.html">글쓰기</a>
+    </div>
+    
     <div class="bottom-bar">
         <nav>
             <ul>
@@ -98,5 +83,20 @@
             </ul>
         </nav>
     </div>
+    <script>
+        const db = firebase.firestore();
+        const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
+
+        const write = db.collection("write").doc();
+
+        write.get().then((doc)=>{
+        if(doc.exists){
+            document.getElementById("title").innerHTML = doc.data().title;
+            document.getElementById("content").innerHTML = doc.data().content;
+        }
+        })
+
+
+    </script>
 </body>
 </html>

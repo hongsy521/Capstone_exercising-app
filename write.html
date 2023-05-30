@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>더보기</title>
+    <link rel="stylesheet" href="top_bottom.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+  
+    <script>
+        const firebaseConfig = {
+              apiKey: "AIzaSyDoo8VPeD5-bb1day25uip3UYDm5nXkcVE",
+              authDomain: "capstone-aefbf.firebaseapp.com",
+              databaseURL: "https://capstone-aefbf-default-rtdb.firebaseio.com",
+              projectId: "capstone-aefbf",
+              storageBucket: "capstone-aefbf.appspot.com",
+              messagingSenderId: "627442023379",
+              appId: "1:627442023379:web:ccd134b08e2aadaea20d26",
+              measurementId: "G-86QYK1RENM"
+          };
+  
+          // Initialize Firebase
+          firebase.initializeApp(firebaseConfig);
+    </script>
+    <style>
+        .container {
+            padding: 0;
+            padding-top: 10px;
+        }
+        
+        .top-bar li:first-child > a {
+            color:tomato;
+        }
+        .bottom-bar li:nth-child(4) > a  {
+            color: tomato;
+        }
+        
+        .title{
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .content{
+            padding: 10px;
+            margin: 10px; 
+        }
+
+        #utitle{
+            width: 100%;
+            height: 30px;
+            font-size: 20px;
+            line-height: 30px;
+        }
+
+        #ucontent{
+            width: 100%;
+            height: 100px;
+            font-size: 15px;
+        }
+
+        .button{
+            padding: 10px;
+            margin: 10px;  
+        }
+
+        #button{
+            width:100%;
+            height:33px;
+            margin: 10px 0 25px 0;
+            color:white;
+            background-color: tomato;
+            border-radius: 5px;
+            border-style: none;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <nav>
+            <ul>
+                <li><a href="#">글쓰기</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="container">
+        <form>
+            <div class="title">
+                <textarea name="title" id="utitle" rows="1" cols="55" placeholder="제목" maxlength="100" required></textarea>
+            </div>
+
+            <div class="content">
+                <textarea name="content" id="ucontent" placeholder="내용" required></textarea>
+                <input class="ufile" type="file" name="SelectFile" />
+            </div>
+
+
+            <div class="button">
+                <button id="button" type="submit">글 작성</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bottom-bar">
+        <nav>
+            <ul>
+                <li><a href="main.html">홈</a></li>
+                <li><a href="exercise.html">운동</a></li>
+                <li><a href="monthly.html">달력</a></li>
+                <li><a href="etc.html">더보기</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        const db = firebase.firestore();
+        const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
+
+        document.getElementById('button').addEventListener('click', (event) => {
+            event.preventDefault()
+            db.collection('write').doc(id).set({
+                title : $('#utitle').val(),
+                content : $('#ucontent').val()
+            })
+            .then((result)=>{
+                alert("글 작성이 완료되었습니다.");
+                window.location.href = 'comu.html'
+            }).catch((error)=>{
+                console.log('error')
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ..
+            })
+        });
+    </script>
+</body>
+</html>

@@ -1,72 +1,72 @@
+*{  
+    margin:0;
+    padding:0;
+}
+
 body{
-    background-color:rgba(255, 126, 104, 0.87);
+    background-color:tomato;
     margin: 0px;
     color: #262626;
     box-sizing: border-box;
 }
 
-a{
-    text-decoration: none;
-    color:#262626;
-}
-
-.login_wrapper{
+.form_wrapper{
     position:absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width:345px;
-    height:380px;
-    top:60%;
+    width:350px;
+    height:450px;
+    top:50%;
     left:50%;
-    margin: -179px 0px 0px -174px;
+    margin: -175px 0px 0px -190px;
     background-color:white;
     border: 1px solid #DBDBDB;
-    border-radius: 10px;
+    overflow-y: scroll;
 }
 
-.login_logo{
+.form_title{
     margin :30px 0 30px 0;
     color:#262626;
+    font-family: 'Lobster', cursive;
     font-size: 40px;
     font-weight: 100px;
 }
 
-.login_form{
-    display:flex;
-    flex-direction: column;
-    width:280px;
-    margin-top:10px;
+.info{
+    padding: 3px;
+    font-size: 14px;
 }
 
-.login_text{
+.input_text{
     width:93%;
     height:40px;
-    margin: 3px 0 3px 0 ;
+    margin: 3px 0 20px 0 ;
     padding: 0 10px 0 10px;
     background-color:#FAFAFA;
     border: 1px solid #DBDBDB;
     border-radius: 3px;
+    
 }
 
-.login_text:focus{
+.input_text:focus{
     outline: 1px solid #a8a8a8;
 }
 
-.login_text::placeholder{
+.input_text::placeholder{
     color:#8E8E8E;
 }
 
-.login_text::value{
+.input_text::value{
     color:#262626;
 }
 
-.login_btn{
+#button{
     width:100%;
     height:33px;
-    margin: 10px 0 5px 0;
+    margin: 10px 0 25px 0;
     color:white;
-    background-color: rgba(255, 126, 104, 0.87);
+    background-color: tomato;
     border-radius: 5px;
     border-style: none;
     font-size: 15px;
@@ -74,8 +74,13 @@ a{
     cursor: pointer;
 }
 
-.login_bottom{
-    margin-top: 65px;
-    color:#01376A;
-    font-size: 13px;
+#mbti{
+    width:100%;
+    height:40px;
+    margin: 3px 0 20px 0;
+    color:#494949;
+    background-color: #FAFAFA;
+    cursor: pointer;
+    border: 1px solid #DBDBDB;
+    border-radius: 3px;
 }
