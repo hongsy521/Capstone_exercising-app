@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main page</title>
+    <link rel="stylesheet" href="./index.css">
+    <style>
+        .bottom-bar li:first-child > a  {
+            color: tomato;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+  
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0kjn0AyijWlVw9EAOefPcYm9LgQuHM8o",
+            authDomain: "firestore-13ae7.firebaseapp.com",
+            projectId: "firestore-13ae7",
+            storageBucket: "firestore-13ae7.appspot.com",
+            messagingSenderId: "585869962348",
+            appId: "1:585869962348:web:1776a785825068ac587c49",
+            measurementId: "G-PLC3CKWYVT"
+          };
+  
+          // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+  <script>
+        // 오늘의 한 마디 목록
+        var missions = [
+            "스쿼트 100개",
+            "유산소 1시간 이상",
+            "상체 1시간 이상",
+            "하체 1시간 이상",
+            "데드리프트 3세트 이상"
+        ];
+    
+        // 오늘의 한 마디 랜덤 선택
+        var randomMission = Math.floor(Math.random() * missions.length);
+        var todaysMissions = missions[randomMission];
+    
+        // 페이지 로드 시 오늘의 한 마디 출력
+        window.onload = function() {
+        var missionsElement = document.getElementById("todays-missions");
+        missionsElement.textContent = todaysMissions;
+        };
+    </script>
+    
+</head>
+<body>
+    <div id="topbar">
+        <div id="applogo">
+            <img src="logo.png" width="50px" alt="앱로고">
+        </div>
+        <h1>Custom Health</h1>
+        <div id="settingicon">
+            <a href="login.html">
+            <img src="user.png" width="50px" alt="프로필">
+            </a>
+        </div>
+    </div>
+
+    <div id="infowrap">
+        <div id="current_date">
+            <script>
+                date = new Date().toLocaleDateString();
+                document.write(date);
+            </script>
+        </div>
+    </div>
+    <div id="timer">
+        <div class="timerset">
+            <span class="time" id="elapsedTimeDisplay">00 : 00 : 00</span></div>
+        <button class="timer_start" onclick="startStopwatch()">시작</button>
+        <button class="timer_stop" onclick="stopStopwatch()">종료</button>
+    </div>
+    <div id="abatawrap">
+        <div class="abatainfo">
+            <img src="abata.jpg" alt="아바타 이미지">
+        </div>
+        <div class="abatainfo">
+            <ul>
+                <li id="name"></li><br>
+                <li><span id="weight"></span><span id="height"></span></li><br>
+                <li id="mbti"></li><br>
+                <li>-10kg</li><br>
+            </ul>
+        </div>
+    </div>
+
+    <div id="dailychallengewrap">
+        <div id="dailychallengeinfo">
+            <h2><오늘의 운동></h2><br>
+            <p id="todays-missions"></p>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <nav>
+            <ul>
+                <li><a href="main.html">홈</a></li>
+                <li><a href="exercise.html">운동</a></li>
+                <li><a href="monthly.html">달력</a></li>
+                <li><a href="etc.html">더보기</a></li>
+            </ul>
+        </nav>
+    </div>    
+
+    <script>
+
+        const db = firebase.firestore();
+
+        const { id, name } = JSON.parse(localStorage.getItem("userInfo"));
+        
+        const user = db.collection("users").doc(id);
+        
+        user.get().then((doc)=>{
+        if(doc.exists){
+            console.log(doc.data().name);
+            document.getElementById("name").innerHTML = doc.data().name;
+            document.getElementById("weight").innerHTML = doc.data().weight+"kg / ";
+            document.getElementById("height").innerHTML = doc.data().height+"cm";
+            document.getElementById("mbti").innerHTML = doc.data().mbti;
+        }
+        })
+    </script>
+
+    <script>
+        // 스톱워치 변수
+    let stopwatchInterval;
+    let startTime;
+    let elapsedTime = 0;
+    let accumulatedTime = 0;
+
+    // 시작 버튼 클릭 이벤트 핸들러
+    function startStopwatch() {
+      if (!stopwatchInterval) {
+        // 스톱워치 시작
+        startTime = Date.now();
+        stopwatchInterval = setInterval(function() {
+          const elapsedTimeInSeconds = (elapsedTime + Date.now() - startTime) / 1000;
+          const elapsedTimeDisplay = document.getElementById("elapsedTimeDisplay");
+          elapsedTimeDisplay.textContent = `${formatTime(elapsedTimeInSeconds)}`;
+        }, 10);
+      }
+    }
+
+    // 종료 버튼 클릭 이벤트 핸들러
+    function stopStopwatch() {
+      if (stopwatchInterval) {
+        // 스톱워치 중지
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        elapsedTime += Date.now() - startTime;
+        const elapsedTimeInSeconds = elapsedTime / 1000;
+
+        // 시간 Firebase Firestore에 저장
+        db.collection("times").add({
+          time: elapsedTimeInSeconds
+        })
+        .then(function(docRef) {
+          console.log("시간이 성공적으로 저장되었습니다.");
+          accumulatedTime += elapsedTimeInSeconds;
+        //   getTotalTime();
+        })
+        .catch(function(error) {
+          console.error("시간 저장 중 오류 발생:", error);
+        });
+      }
+    }
+
+    // 시간을 "00:00:00" 형식으로 포맷하는 함수
+    function formatTime(timeInSeconds) {
+      const hours = Math.floor(timeInSeconds / 3600);
+      const minutes = Math.floor((timeInSeconds % 3600) / 60);
+      const seconds = Math.floor(timeInSeconds % 60);
+      return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    }
+
+    // 숫자를 두 자리로 만들어주는 함수
+    function padZero(number) {
+      return String(number).padStart(2, '0');
+    }
+    </script>
+</body>
+</html>
