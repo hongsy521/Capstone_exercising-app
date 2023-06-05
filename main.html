@@ -18,14 +18,13 @@
   
     <script>
         const firebaseConfig = {
-              apiKey: "AIzaSyDoo8VPeD5-bb1day25uip3UYDm5nXkcVE",
-              authDomain: "capstone-aefbf.firebaseapp.com",
-              databaseURL: "https://capstone-aefbf-default-rtdb.firebaseio.com",
-              projectId: "capstone-aefbf",
-              storageBucket: "capstone-aefbf.appspot.com",
-              messagingSenderId: "627442023379",
-              appId: "1:627442023379:web:ccd134b08e2aadaea20d26",
-              measurementId: "G-86QYK1RENM"
+            apiKey: "AIzaSyD0kjn0AyijWlVw9EAOefPcYm9LgQuHM8o",
+            authDomain: "firestore-13ae7.firebaseapp.com",
+            projectId: "firestore-13ae7",
+            storageBucket: "firestore-13ae7.appspot.com",
+            messagingSenderId: "585869962348",
+            appId: "1:585869962348:web:1776a785825068ac587c49",
+            measurementId: "G-PLC3CKWYVT"
           };
   
           // Initialize Firebase
@@ -77,9 +76,9 @@
     </div>
     <div id="timer">
         <div class="timerset">
-            <span class="time">00 : 00 : 00</span></div>
-        <input class="timer_start" type="button" value="시작">
-        <input class="timer_stop" type="button" value="종료">
+            <span class="time" id="elapsedTimeDisplay">00 : 00 : 00</span></div>
+        <button class="timer_start" onclick="startStopwatch()">시작</button>
+        <button class="timer_stop" onclick="stopStopwatch()">종료</button>
     </div>
     <div id="abatawrap">
         <div class="abatainfo">
@@ -130,6 +129,64 @@
             document.getElementById("mbti").innerHTML = doc.data().mbti;
         }
         })
+    </script>
+
+    <script>
+        // 스톱워치 변수
+    let stopwatchInterval;
+    let startTime;
+    let elapsedTime = 0;
+    let accumulatedTime = 0;
+
+    // 시작 버튼 클릭 이벤트 핸들러
+    function startStopwatch() {
+      if (!stopwatchInterval) {
+        // 스톱워치 시작
+        startTime = Date.now();
+        stopwatchInterval = setInterval(function() {
+          const elapsedTimeInSeconds = (elapsedTime + Date.now() - startTime) / 1000;
+          const elapsedTimeDisplay = document.getElementById("elapsedTimeDisplay");
+          elapsedTimeDisplay.textContent = `${formatTime(elapsedTimeInSeconds)}`;
+        }, 10);
+      }
+    }
+
+    // 종료 버튼 클릭 이벤트 핸들러
+    function stopStopwatch() {
+      if (stopwatchInterval) {
+        // 스톱워치 중지
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        elapsedTime += Date.now() - startTime;
+        const elapsedTimeInSeconds = elapsedTime / 1000;
+
+        // 시간 Firebase Firestore에 저장
+        db.collection("times").add({
+          time: elapsedTimeInSeconds
+        })
+        .then(function(docRef) {
+          console.log("시간이 성공적으로 저장되었습니다.");
+          accumulatedTime += elapsedTimeInSeconds;
+        //   getTotalTime();
+        })
+        .catch(function(error) {
+          console.error("시간 저장 중 오류 발생:", error);
+        });
+      }
+    }
+
+    // 시간을 "00:00:00" 형식으로 포맷하는 함수
+    function formatTime(timeInSeconds) {
+      const hours = Math.floor(timeInSeconds / 3600);
+      const minutes = Math.floor((timeInSeconds % 3600) / 60);
+      const seconds = Math.floor(timeInSeconds % 60);
+      return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    }
+
+    // 숫자를 두 자리로 만들어주는 함수
+    function padZero(number) {
+      return String(number).padStart(2, '0');
+    }
     </script>
 </body>
 </html>
