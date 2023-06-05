@@ -267,11 +267,12 @@ nav li {
 
 
 #monthwrap{
-    border: 2px solid rgba(255, 99, 71, 0.906);
+    border: 1px solid rgba(255, 113, 87, 0.906);
+    box-shadow: 2px 2px 1px rgba(255, 99, 71, 0.906);
     border-radius: 10px;
-    margin: 30px; margin-top: 70px;
-    height: 500px;
-    background-color: seashell;
+    margin: 35px; margin-top: 70px; margin-bottom: 70px;
+    height: 600px;
+    background-color: #fef7f793;
     overflow-y: scroll;
 }
 .Calendar{
